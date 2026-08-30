@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   generator: 'v0.app',
   icons: {
     icon: [
-      { url: 'https://pemilos.osisaa16.my.id/logo-osis.png', media: '(prefers-color-scheme: light)' },
-      { url: 'https://pemilos.osisaa16.my.id/logo-osis.png', media: '(prefers-color-scheme: dark)' },
-      { url: 'https://pemilos.osisaa16.my.id/logo-osis.png', type: 'image/png' },
+      { url: 'https://cdn.zakilabs.my.id/pemilos/logoosis.png', media: '(prefers-color-scheme: light)' },
+      { url: 'https://cdn.zakilabs.my.id/pemilos/logoosis.png', media: '(prefers-color-scheme: dark)' },
+      { url: 'https://cdn.zakilabs.my.id/pemilos/logoosis.png', type: 'image/png' },
     ],
-    apple: 'https://pemilos.osisaa16.my.id/logo-osis.png',
+    apple: 'https://cdn.zakilabs.my.id/pemilos/logoosis.png',
   },
 }
 
