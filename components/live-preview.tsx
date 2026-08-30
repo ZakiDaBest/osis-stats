@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { Maximize2, RefreshCw, Radio, Trophy } from 'lucide-react'
+import { GOOGLE_SCRIPT_URL } from '@/lib/google-script'
 
 type Candidate = { name?: string; nama?: string; namaKetua?: string; namaWakil?: string; photoKetua?: string; photoWakil?: string; image?: string; foto?: string; photo?: string; votes?: number; color?: string }
 type Data = { candidates?: Candidate[]; votes?: Array<{ candidateName?: string; candidate?: string }>; totalVoters?: number; sessionStatus?: string }
@@ -25,7 +26,12 @@ export default function LivePreview({ initialData }: { initialData: Data }) {
   const total = candidates.reduce((sum, candidate) => sum + candidate.count, 0)
   const refresh = async () => {
     setLoading(true)
-    try { const response = await fetch('/api/live-data', { cache: 'no-store' }); const next = await response.json(); if (next.result === 'success') setData(next); setUpdated(new Date()) } finally { setLoading(false) }
+    try {
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDashboardData`, { cache: 'no-store' })
+      const next = await response.json()
+      if (next.result === 'success') setData(next)
+      setUpdated(new Date())
+    } finally { setLoading(false) }
   }
   useEffect(() => { const timer = window.setInterval(refresh, 5000); return () => window.clearInterval(timer) }, [])
   const goFullscreen = () => document.documentElement.requestFullscreen?.()

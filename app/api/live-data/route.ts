@@ -1,8 +1,8 @@
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOWGpev50hGcBHssVfKpjtT-4GD9uU2gli0Kgwump-TlFoSYXRuynn4rouGL0dPJa6IQ/exec'
+import { GOOGLE_SCRIPT_URL } from '@/lib/google-script'
 
 export async function GET() {
   try {
-    const response = await fetch(`${SCRIPT_URL}?action=getDashboardData`, { cache: 'no-store' })
+    const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDashboardData`, { cache: 'no-store' })
     const data = await response.json()
     return Response.json(data, { headers: { 'Cache-Control': 'no-store' } })
   } catch {
