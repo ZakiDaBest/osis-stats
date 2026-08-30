@@ -14,7 +14,7 @@ const colors = ['#7057d9', '#e57b59', '#40a89a', '#d5a344']
 export default function StatisticsDashboard({ data, adminName }: { data: DashboardData; adminName: string }) {
   const router = useRouter(); const [range, setRange] = useState('Today'); const [notice, setNotice] = useState('')
   useEffect(() => {
-    const interval = window.setInterval(() => router.refresh(), 30000)
+    const interval = window.setInterval(() => router.refresh(), 10000)
     return () => window.clearInterval(interval)
   }, [router])
   const counts = useMemo(() => data.votes.reduce<Record<string, number>>((a, v) => { a[v.candidateName] = (a[v.candidateName] || 0) + 1; return a }, {}), [data.votes])
