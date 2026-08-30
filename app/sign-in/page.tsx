@@ -20,7 +20,6 @@ export default function SignInPage() {
     setLoading(false)
     if (result.error) { setError('Email atau password tidak valid.'); return }
     router.push('/')
-    router.refresh()
   }
 
   return <main className="flex min-h-screen items-center justify-center bg-[#f7f7fb] px-5 text-[#20202b]">
