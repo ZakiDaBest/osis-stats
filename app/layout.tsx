@@ -1,11 +1,13 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { PwaRegister } from '@/components/pwa-register'
 import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Statistics · SMAZA16 Election Portal',
   description: 'Real-time OSIS election statistics and participation dashboard for SMAZA16 Semarang.',
   generator: 'v0.app',
+  manifest: '/manifest.webmanifest',
   icons: {
     icon: [
       { url: 'https://cdn.zakilabs.my.id/pemilos/logoosis.png', media: '(prefers-color-scheme: light)' },
@@ -23,5 +25,5 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="id"><body className="antialiased">{children}{process.env.NODE_ENV === 'production' && <Analytics />}</body></html>
+  return <html lang="id"><body className="antialiased"><PwaRegister />{children}{process.env.NODE_ENV === 'production' && <Analytics />}</body></html>
 }

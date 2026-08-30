@@ -1,0 +1,24 @@
+{
+  "name": "Portal Statistik PEMILOS SMAZA16",
+  "short_name": "SMAZA16",
+  "description": "Statistik PEMILOS SMAZA16.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#7057d9",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn.zakilabs.my.id/pemilos/logoosis.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn.zakilabs.my.id/pemilos/logoosis.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
