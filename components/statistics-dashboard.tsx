@@ -17,20 +17,29 @@ export default function StatisticsDashboard({ data, adminName }: { data: Dashboa
 
   useEffect(() => { setDashboardData(data) }, [data])
 
-  const refreshData = async () => {
+  const refreshData = async (signal?: AbortSignal) => {
     try {
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDashboardData`, { cache: 'no-store' })
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDashboardData`, { cache: 'no-store', headers: { Accept: 'application/json' }, signal })
       const next = await response.json()
-      if (next.result === 'success') setDashboardData(next)
-    } catch {
-      // keep the last successful dataset if the Google macro is temporarily unavailable
+      if (next.result === 'success') setDashboardData((current) => JSON.stringify(current) === JSON.stringify(next) ? current : next)
+    } catch (error) {
+      if ((error as Error).name !== 'AbortError') {
+        // Keep the last successful dataset if Google Scripts is temporarily unavailable.
+      }
     }
   }
 
   useEffect(() => {
-    const interval = window.setInterval(() => { void refreshData() }, 10000)
-    void refreshData()
-    return () => window.clearInterval(interval)
+    const controller = new AbortController()
+    let timer: number | undefined
+    const schedule = () => {
+      if (document.visibilityState === 'visible') timer = window.setTimeout(async () => { await refreshData(controller.signal); schedule() }, 10000)
+    }
+    const onVisibilityChange = () => { if (document.visibilityState === 'visible') { void refreshData(controller.signal); schedule() } else if (timer) window.clearTimeout(timer) }
+    void refreshData(controller.signal)
+    schedule()
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => { controller.abort(); if (timer) window.clearTimeout(timer); document.removeEventListener('visibilitychange', onVisibilityChange) }
   }, [])
 
   const counts = useMemo(() => dashboardData.votes.reduce<Record<string, number>>((a, v) => { a[v.candidateName] = (a[v.candidateName] || 0) + 1; return a }, {}), [dashboardData.votes])
