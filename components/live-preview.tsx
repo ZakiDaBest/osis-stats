@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { Maximize2, RefreshCw, Radio, Trophy } from 'lucide-react'
-import { GOOGLE_SCRIPT_URL } from '@/lib/google-script'
+import { fetchDashboardData } from '@/lib/google-script'
 
 type Candidate = { name?: string; nama?: string; namaKetua?: string; namaWakil?: string; photoKetua?: string; photoWakil?: string; image?: string; foto?: string; photo?: string; votes?: number; color?: string }
 type Data = { candidates?: Candidate[]; votes?: Array<{ candidateName?: string; candidate?: string }>; totalVoters?: number; sessionStatus?: string }
@@ -24,16 +24,25 @@ export default function LivePreview({ initialData }: { initialData: Data }) {
     return (data.candidates || []).map((candidate, index) => ({ ...candidate, label: candidateName(candidate), count: counts[candidateName(candidate)] ?? candidate.votes ?? 0, color: candidate.color || colors[index % colors.length] })).sort((a, b) => b.count - a.count)
   }, [data])
   const total = candidates.reduce((sum, candidate) => sum + candidate.count, 0)
-  const refresh = async () => {
+  const refresh = async (signal?: AbortSignal) => {
     setLoading(true)
     try {
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDashboardData`, { cache: 'no-store' })
-      const next = await response.json()
-      if (next.result === 'success') setData(next)
+      const next = await fetchDashboardData(signal)
+      if (next.result === 'success') setData((current: Data) => JSON.stringify(current) === JSON.stringify(next) ? current : next)
       setUpdated(new Date())
+    } catch (error) {
+      if ((error as Error).name !== 'AbortError') setUpdated(new Date())
     } finally { setLoading(false) }
   }
-  useEffect(() => { const timer = window.setInterval(refresh, 5000); return () => window.clearInterval(timer) }, [])
+  useEffect(() => {
+    const controller = new AbortController()
+    let timer: number | undefined
+    const schedule = () => { if (document.visibilityState === 'visible') timer = window.setTimeout(async () => { await refresh(controller.signal); schedule() }, 5000) }
+    const onVisibilityChange = () => { if (document.visibilityState === 'visible') { void refresh(controller.signal); schedule() } else if (timer) window.clearTimeout(timer) }
+    schedule()
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => { controller.abort(); if (timer) window.clearTimeout(timer); document.removeEventListener('visibilitychange', onVisibilityChange) }
+  }, [])
   const goFullscreen = () => document.documentElement.requestFullscreen?.()
   return <main className="min-h-screen overflow-hidden bg-[#100d1f] text-white selection:bg-[#7657e8]">
     <header className="flex items-center justify-between border-b border-white/10 px-6 py-5 sm:px-10 lg:px-16">
