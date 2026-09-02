@@ -10,11 +10,11 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   icons: {
     icon: [
-      { url: 'https://cdn.zakilabs.my.id/pemilos/logoosis.png', media: '(prefers-color-scheme: light)' },
-      { url: 'https://cdn.zakilabs.my.id/pemilos/logoosis.png', media: '(prefers-color-scheme: dark)' },
-      { url: 'https://cdn.zakilabs.my.id/pemilos/logoosis.png', type: 'image/png' },
+      { url: '/apple-icon.png', type: 'image/png', sizes: '180x180', media: '(prefers-color-scheme: light)' },
+      { url: '/apple-icon.png', type: 'image/png', sizes: '180x180', media: '(prefers-color-scheme: dark)' },
+      { url: '/apple-icon.png', type: 'image/png', sizes: '180x180' },
     ],
-    apple: 'https://cdn.zakilabs.my.id/pemilos/logoosis.png',
+    apple: '/apple-icon.png',
   },
 }
 
