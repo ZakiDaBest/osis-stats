@@ -20,15 +20,15 @@ export default function VoteReplay({ initialData }: { initialData: Data }) {
   const [playing, setPlaying] = useState(true)
   const [loading, setLoading] = useState(false)
   const [updated, setUpdated] = useState<Date | null>(null)
-  const votes = data.votes || []
+  const votes = useMemo(() => (data.votes || []).filter((vote) => Boolean((vote.candidateName || vote.candidate || '').trim())), [data.votes])
   const stage = stages[stageIndex]
   const visibleVotes = useMemo(() => votes.slice(0, Math.ceil(votes.length * stage / 100)), [votes, stage])
   const candidates = useMemo<ReplayCandidate[]>(() => {
-    const counts = visibleVotes.reduce<Record<string, number>>((acc, vote) => { const key = vote.candidateName || vote.candidate || ''; acc[key] = (acc[key] || 0) + 1; return acc }, {})
+    const counts = visibleVotes.reduce<Record<string, number>>((acc, vote) => { const key = (vote.candidateName || vote.candidate || '').trim(); acc[key] = (acc[key] || 0) + 1; return acc }, {})
     return (data.candidates || []).map((candidate, index) => ({ ...candidate, label: candidateName(candidate), count: counts[candidateName(candidate)] || 0, color: candidate.color || colors[index % colors.length] })).sort((a, b) => b.count - a.count)
   }, [data.candidates, visibleVotes])
   const candidateVoteTotal = (data.candidates || []).reduce((sum, candidate) => sum + (Number.isFinite(candidate.votes) ? Number(candidate.votes) : 0), 0)
-  const totalVotes = votes.length || candidateVoteTotal || data.totalVoters || 0
+  const totalVotes = votes.length || candidateVoteTotal || 0
   const total = votes.length ? visibleVotes.length : Math.min(Math.ceil(totalVotes * stage / 100), totalVotes)
   const refresh = async () => { setLoading(true); try { const next = await fetchDashboardData(); if (next.result === 'success') { setData(next); setStageIndex(0) }; setUpdated(new Date()) } catch { setUpdated(new Date()) } finally { setLoading(false) } }
   useEffect(() => { setUpdated(new Date()) }, [])
