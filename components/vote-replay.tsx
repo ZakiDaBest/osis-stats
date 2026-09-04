@@ -27,8 +27,9 @@ export default function VoteReplay({ initialData }: { initialData: Data }) {
     const counts = visibleVotes.reduce<Record<string, number>>((acc, vote) => { const key = vote.candidateName || vote.candidate || ''; acc[key] = (acc[key] || 0) + 1; return acc }, {})
     return (data.candidates || []).map((candidate, index) => ({ ...candidate, label: candidateName(candidate), count: counts[candidateName(candidate)] || 0, color: candidate.color || colors[index % colors.length] })).sort((a, b) => b.count - a.count)
   }, [data.candidates, visibleVotes])
-  const totalVotes = votes.length || data.totalVoters || 0
-  const total = votes.length ? visibleVotes.length : Math.ceil(totalVotes * stage / 100)
+  const candidateVoteTotal = (data.candidates || []).reduce((sum, candidate) => sum + (Number.isFinite(candidate.votes) ? Number(candidate.votes) : 0), 0)
+  const totalVotes = votes.length || candidateVoteTotal || data.totalVoters || 0
+  const total = votes.length ? visibleVotes.length : Math.min(Math.ceil(totalVotes * stage / 100), totalVotes)
   const refresh = async () => { setLoading(true); try { const next = await fetchDashboardData(); if (next.result === 'success') { setData(next); setStageIndex(0) }; setUpdated(new Date()) } catch { setUpdated(new Date()) } finally { setLoading(false) } }
   useEffect(() => { setUpdated(new Date()) }, [])
   useEffect(() => { if (!playing) return; const timer = window.setTimeout(() => { if (stageIndex < stages.length - 1) setStageIndex(index => index + 1); else setPlaying(false) }, 5000); return () => window.clearTimeout(timer) }, [playing, stageIndex])
